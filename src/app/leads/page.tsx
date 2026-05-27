@@ -4,6 +4,8 @@ import { db } from "@/lib/db";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 
+export const dynamic = "force-dynamic";
+
 export default async function LeadsPage() {
   const leads = await db.lead.findMany({
     orderBy: { createdAt: "desc" },
@@ -16,18 +18,20 @@ export default async function LeadsPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
-        <h2 className="text-xl font-semibold">All Leads</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h2 className="text-3xl font-bold tracking-tight">All Leads</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground/70 nums">
           {leads.length} lead{leads.length !== 1 ? "s" : ""} across all campaigns
         </p>
       </div>
 
       {leads.length === 0 ? (
-        <Card className="flex flex-col items-center justify-center gap-4 p-16 border-dashed border-border/60 bg-card/40">
-          <Users className="h-8 w-8 text-muted-foreground" />
-          <div className="text-center">
-            <p className="font-medium">No leads yet</p>
-            <p className="text-sm text-muted-foreground mt-1">
+        <Card className="empty-state-container flex flex-col items-center justify-center gap-5 p-20 border-dashed border-border/50 bg-card/30">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl icon-container-primary glow-logo">
+            <Users className="h-7 w-7 text-primary" />
+          </div>
+          <div className="text-center max-w-sm">
+            <p className="text-lg font-semibold">No leads yet</p>
+            <p className="text-sm text-muted-foreground/70 mt-2 leading-relaxed">
               Create a campaign and upload a CSV to see leads here.
             </p>
           </div>

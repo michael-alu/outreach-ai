@@ -100,6 +100,18 @@
   --input: oklch(1 0 0 / 10%);
   --ring: oklch(0.62 0.19 280);
 
+  /* Semantic accent colors */
+  --color-success: oklch(0.65 0.16 160);   /* mint green */
+  --color-warning: oklch(0.76 0.14 80);    /* amber */
+  --color-info: oklch(0.68 0.17 280);      /* lighter indigo */
+
+  /* Depth & glow tokens */
+  --shadow-card: 0 1px 3px oklch(0 0 0 / 30%), 0 1px 2px oklch(0 0 0 / 20%), inset 0 1px 0 oklch(1 0 0 / 4%);
+  --shadow-glow-primary: 0 0 24px -4px oklch(0.62 0.19 280 / 40%);
+  --shadow-glow-logo: 0 0 14px 0 oklch(0.62 0.19 280 / 55%);
+  --radius-primary-card: 1rem;     /* 16px */
+  --radius-empty-state: 1.25rem;   /* 20px */
+
   /* Call state colors */
   --call-queued: oklch(0.5 0 0);
   --call-ringing: oklch(0.76 0.15 85);
@@ -127,6 +139,42 @@
   html {
     @apply font-sans;
   }
+}
+
+/* ─── Design system utilities ─── */
+@layer utilities {
+  /* Elevated primary card — depth + inner highlight */
+  .card-elevated {
+    box-shadow: var(--shadow-card);
+    background-image: linear-gradient(to bottom, oklch(0.21 0 0), oklch(0.185 0 0));
+    border-radius: var(--radius-primary-card);
+  }
+  .card-elevated:hover {
+    border-color: oklch(0.62 0.19 280 / 30%) !important;
+  }
+
+  /* Glow utilities */
+  .glow-primary   { box-shadow: var(--shadow-glow-primary); }
+  .glow-logo      { box-shadow: var(--shadow-glow-logo); }
+
+  /* Tabular numeric values */
+  .nums { font-variant-numeric: tabular-nums; }
+
+  /* Empty-state container */
+  .empty-state-container {
+    border-radius: var(--radius-empty-state);
+  }
+
+  /* Icon accent containers */
+  .icon-container-primary  { background-color: oklch(0.62 0.19 280 / 10%); }
+  .icon-container-success  { background-color: oklch(0.65 0.16 160 / 10%); }
+  .icon-container-warning  { background-color: oklch(0.76 0.14 80  / 10%); }
+  .icon-container-neutral  { background-color: oklch(1 0 0 / 6%); }
+
+  /* Colored icon tints */
+  .icon-success { color: var(--color-success); }
+  .icon-warning { color: var(--color-warning); }
+  .icon-info    { color: var(--color-info); }
 }
 
 /* ─── Call state utilities ─── */

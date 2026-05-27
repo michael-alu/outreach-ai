@@ -91,27 +91,30 @@ export function NewCampaignWizard() {
         {STEPS.map((s, i) => (
           <div key={s} className="flex items-center gap-2">
             <div
-              className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-mono font-semibold transition-colors ${
+              className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-mono font-semibold transition-all duration-200 ${
                 i < stepIndex
                   ? "bg-primary text-primary-foreground"
                   : i === stepIndex
-                  ? "bg-primary/20 text-primary ring-1 ring-primary"
-                  : "bg-muted text-muted-foreground"
+                  ? "bg-primary/15 text-primary border border-primary/50"
+                  : "bg-transparent text-muted-foreground/60 border border-border/60"
               }`}
+              style={i === stepIndex ? { boxShadow: "0 0 0 4px oklch(0.62 0.19 280 / 15%)" } : undefined}
             >
               {i < stepIndex ? "✓" : i + 1}
             </div>
             <span
-              className={`text-xs font-medium ${
-                i === stepIndex ? "text-foreground" : "text-muted-foreground"
+              className={`text-xs font-medium transition-colors ${
+                i === stepIndex ? "text-foreground" : i < stepIndex ? "text-muted-foreground" : "text-muted-foreground/50"
               }`}
             >
               {STEP_LABELS[s]}
             </span>
             {i < STEPS.length - 1 && (
-              <div
-                className={`h-px w-8 ${i < stepIndex ? "bg-primary" : "bg-border"}`}
-              />
+              <div className="relative h-px w-8 bg-border/60">
+                {i < stepIndex && (
+                  <div className="absolute inset-0 bg-primary transition-all duration-300" />
+                )}
+              </div>
             )}
           </div>
         ))}

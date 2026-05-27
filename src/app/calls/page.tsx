@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import type { CallAnalysis } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function CallsPage() {
   const calls = await db.call.findMany({
     orderBy: { createdAt: "desc" },
@@ -18,18 +20,20 @@ export default async function CallsPage() {
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
-        <h2 className="text-xl font-semibold">All Calls</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h2 className="text-3xl font-bold tracking-tight">All Calls</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground/70 nums">
           {calls.length} call{calls.length !== 1 ? "s" : ""} total
         </p>
       </div>
 
       {calls.length === 0 ? (
-        <Card className="flex flex-col items-center justify-center gap-4 p-16 border-dashed border-border/60 bg-card/40">
-          <PhoneCall className="h-8 w-8 text-muted-foreground" />
-          <div className="text-center">
-            <p className="font-medium">No calls yet</p>
-            <p className="text-sm text-muted-foreground mt-1">Start a campaign to see calls here.</p>
+        <Card className="empty-state-container flex flex-col items-center justify-center gap-5 p-20 border-dashed border-border/50 bg-card/30">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl icon-container-primary glow-logo">
+            <PhoneCall className="h-7 w-7 text-primary" />
+          </div>
+          <div className="text-center max-w-sm">
+            <p className="text-lg font-semibold">No calls yet</p>
+            <p className="text-sm text-muted-foreground/70 mt-2 leading-relaxed">Start a campaign to see calls here.</p>
           </div>
         </Card>
       ) : (

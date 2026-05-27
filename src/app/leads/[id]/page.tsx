@@ -8,6 +8,8 @@ import { LeadRecallButton } from "@/components/leads/lead-recall-button";
 import { RECALLABLE_STATUSES } from "@/lib/lead-constants";
 import type { CallAnalysis } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function LeadDetailPage({
   params,
 }: {

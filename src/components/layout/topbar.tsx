@@ -27,19 +27,21 @@ export function TopBar() {
 
   return (
     <header className="flex h-14 items-center justify-between border-b border-border px-6">
-      <h1 className="text-sm font-semibold text-foreground">
+      <h1 className="text-sm font-bold tracking-tight text-foreground">
         {getTitle(pathname)}
       </h1>
       <button
         onClick={open}
         className={cn(
           buttonVariants({ variant: "outline", size: "sm" }),
-          "h-8 gap-2 text-xs text-muted-foreground hover:text-foreground border-border/60"
+          "h-8 gap-2 text-xs text-muted-foreground hover:text-foreground",
+          "border-border/50 bg-background/60 shadow-[inset_0_1px_2px_oklch(0_0_0/20%)]",
+          "transition-colors duration-150"
         )}
       >
         <Search className="h-3.5 w-3.5" />
         Search…
-        <kbd className="ml-1 rounded bg-muted px-1 py-0.5 text-[10px] font-mono">
+        <kbd className="ml-1 rounded border border-border/60 bg-muted/80 px-1.5 py-0.5 text-[9px] font-mono tracking-wide">
           ⌘K
         </kbd>
       </button>

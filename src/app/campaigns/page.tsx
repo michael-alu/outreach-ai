@@ -14,6 +14,8 @@ const statusColors: Record<CampaignStatus, string> = {
   COMPLETED: "bg-status-completed status-completed border-0",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function CampaignsPage() {
   const campaigns = await db.campaign.findMany({
     orderBy: { createdAt: "desc" },
@@ -26,8 +28,8 @@ export default async function CampaignsPage() {
     <div className="mx-auto max-w-4xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold">Campaigns</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h2 className="text-3xl font-bold tracking-tight">Campaigns</h2>
+          <p className="mt-1.5 text-sm text-muted-foreground/70 nums">
             {campaigns.length} campaign{campaigns.length !== 1 ? "s" : ""}
           </p>
         </div>
@@ -41,20 +43,19 @@ export default async function CampaignsPage() {
       </div>
 
       {campaigns.length === 0 ? (
-        <Card className="flex flex-col items-center justify-center gap-4 p-16 border-border/60 border-dashed bg-card/40">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-            <Megaphone className="h-6 w-6 text-primary" />
+        <Card className="empty-state-container flex flex-col items-center justify-center gap-5 p-20 border-dashed border-border/50 bg-card/30">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl icon-container-primary glow-logo">
+            <Megaphone className="h-7 w-7 text-primary" />
           </div>
-          <div className="text-center">
-            <h3 className="font-semibold">No campaigns yet</h3>
-            <p className="mt-1 text-sm text-muted-foreground max-w-xs">
-              Create a campaign to upload leads, configure your pitch, and start
-              calling.
+          <div className="text-center max-w-sm">
+            <h3 className="text-lg font-semibold">No campaigns yet</h3>
+            <p className="mt-2 text-sm text-muted-foreground/70 leading-relaxed">
+              Create a campaign to upload leads, configure your pitch, and start calling.
             </p>
           </div>
           <Link
             href="/campaigns/new"
-            className={cn(buttonVariants(), "gap-2 mt-2")}
+            className={cn(buttonVariants(), "gap-2 mt-1 glow-primary transition-all duration-150")}
           >
             <Plus className="h-4 w-4" />
             Create your first campaign
