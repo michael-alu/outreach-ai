@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronRight, Phone, Sparkles, MessageSquare } from "lucide-react";
+import { ChevronRight, Phone, Sparkles, MessageSquare, Info } from "lucide-react";
 import { db } from "@/lib/db";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { LeadRecallButton } from "@/components/leads/lead-recall-button";
+import { RECALLABLE_STATUSES } from "@/lib/lead-constants";
 import type { CallAnalysis } from "@/lib/types";
 
 export default async function LeadDetailPage({
@@ -38,13 +40,27 @@ export default async function LeadDetailPage({
       </div>
 
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold">{lead.name}</h2>
           <p className="mt-0.5 font-mono text-sm text-muted-foreground">{lead.phone}</p>
         </div>
-        <StatusBadge status={lead.status} />
+        <div className="flex items-center gap-3 shrink-0">
+          <StatusBadge status={lead.status} />
+          <LeadRecallButton leadId={lead.id} leadName={lead.name} />
+        </div>
       </div>
+
+      {/* Recall advisory */}
+      {RECALLABLE_STATUSES.includes(lead.status) && lead.calls.length > 0 && (
+        <div className="flex items-start gap-2.5 rounded-lg border border-border/50 bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+          <Info className="h-4 w-4 mt-0.5 shrink-0 text-primary/70" />
+          <span>
+            This lead has been called before. You can recall them — consider reviewing the call analysis below
+            before doing so to tailor the approach.
+          </span>
+        </div>
+      )}
 
       {/* Context */}
       {Object.keys(context).length > 0 && (

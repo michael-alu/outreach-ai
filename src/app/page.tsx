@@ -4,8 +4,6 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { db } from "@/lib/db";
-import { DashboardRollup } from "@/components/dashboard/dashboard-rollup";
-import type { BatchRollup } from "@/lib/types";
 
 export default async function DashboardPage() {
   const [totalCalls, completedLeads, enrichedLeads, campaigns] =
@@ -22,15 +20,6 @@ export default async function DashboardPage() {
 
   const answeredCalls = await db.call.count({ where: { status: "COMPLETED" } });
   const connectRate = totalCalls > 0 ? Math.round((answeredCalls / totalCalls) * 100) : null;
-
-  // Latest rollup from most recent completed campaign
-  const latestRollupCampaign = await db.campaign.findFirst({
-    where: { rollupAnalysis: { not: null } },
-    orderBy: { updatedAt: "desc" },
-  });
-  const rollup: BatchRollup | null = latestRollupCampaign?.rollupAnalysis
-    ? (() => { try { return JSON.parse(latestRollupCampaign.rollupAnalysis!); } catch { return null; } })()
-    : null;
 
   const statCards = [
     {
@@ -100,32 +89,24 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* Rollup analysis */}
-      {rollup ? (
-        <DashboardRollup rollup={rollup} campaignName={latestRollupCampaign?.name ?? ""} />
-      ) : (
-        totalCalls === 0 ? (
-          <Card className="flex flex-col items-center justify-center gap-4 p-16 border-border/60 border-dashed bg-card/40">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-              <Zap className="h-6 w-6 text-primary" />
-            </div>
-            <div className="text-center">
-              <h3 className="font-semibold text-foreground">No campaigns yet</h3>
-              <p className="mt-1.5 max-w-xs text-sm text-muted-foreground">
-                Upload a CSV of leads, configure your pitch, and let Claude AI
-                handle the rest — planning, calling, and learning from every conversation.
-              </p>
-            </div>
-            <Link href="/campaigns/new" className={cn(buttonVariants(), "gap-2 mt-2")}>
-              <Plus className="h-4 w-4" />
-              Create your first campaign
-            </Link>
-          </Card>
-        ) : null
-      )}
-
       {/* Recent campaigns */}
-      {campaigns.length > 0 && (
+      {campaigns.length === 0 ? (
+        <Card className="flex flex-col items-center justify-center gap-4 p-16 border-border/60 border-dashed bg-card/40">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+            <Megaphone className="h-6 w-6 text-primary" />
+          </div>
+          <div className="text-center">
+            <h3 className="font-semibold text-foreground">No campaigns yet</h3>
+            <p className="mt-1.5 max-w-xs text-sm text-muted-foreground">
+              Upload a CSV of leads, configure your pitch, and let Claude AI handle the calls.
+            </p>
+          </div>
+          <Link href="/campaigns/new" className={cn(buttonVariants(), "gap-2 mt-2")}>
+            <Plus className="h-4 w-4" />
+            Create your first campaign
+          </Link>
+        </Card>
+      ) : (
         <div>
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-sm font-semibold">Recent Campaigns</h3>
@@ -149,42 +130,6 @@ export default async function DashboardPage() {
                   </span>
                 </Card>
               </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Claude integrations teaser — only show when no data */}
-      {totalCalls === 0 && (
-        <div>
-          <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-            How Claude Powers This
-          </h3>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                title: "Plans the calls",
-                desc: "Ranks leads by conversion likelihood and generates a tailored pitch angle for each one.",
-              },
-              {
-                title: "Makes the calls",
-                desc: "Drives the live voice conversation in real time, handles objections, and takes actions mid-call.",
-              },
-              {
-                title: "Learns from calls",
-                desc: "Analyzes every transcript, scores interest, drafts follow-ups, and coaches script improvements.",
-              },
-            ].map(({ title, desc }) => (
-              <Card
-                key={title}
-                className="flex items-start gap-3 p-4 border-border/60 bg-card/60"
-              >
-                <div className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                <div>
-                  <p className="text-sm font-medium">{title}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{desc}</p>
-                </div>
-              </Card>
             ))}
           </div>
         </div>

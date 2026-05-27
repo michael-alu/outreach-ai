@@ -72,7 +72,7 @@ export class VapiProvider implements TelephonyProvider {
         model: {
           provider: "anthropic",
           model: HAIKU,
-          systemPrompt,
+          messages: [{ role: "system", content: systemPrompt }],
           // §5.4 in-call tools
           tools: [
             {

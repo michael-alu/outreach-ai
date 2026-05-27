@@ -28,7 +28,7 @@ export default async function CampaignDetailPage({
 
   return (
     <CampaignDetailClient
-      campaign={{ ...campaign, productInfo }}
+      campaign={{ ...campaign, productInfo, rollupAnalysis: campaign.rollupAnalysis ?? null }}
       leads={campaign.leads}
     />
   );
