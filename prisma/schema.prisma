@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Campaign {
+  id             String   @id @default(cuid())
+  name           String
+  productInfo    String   // JSON: { name, description, valueProps[], price, objections[], cta, language }
+  status         String   @default("DRAFT") // DRAFT | ACTIVE | PAUSED | COMPLETED
+  rollupAnalysis String?  // JSON from batch analysis (§5.6)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  leads          Lead[]
+}
+
+model Lead {
+  id              String   @id @default(cuid())
+  campaignId      String
+  name            String
+  phone           String   // +250XXXXXXXXX validated
+  context         String   @default("{}") // JSON: arbitrary context fields from CSV
+  priorityRank    Int?
+  angle           String?  // Claude-generated pitch angle
+  generatedPrompt String?  // Claude-generated system prompt for this call
+  status          String   @default("NEW") // NEW | ENRICHED | QUEUED | RINGING | IN_PROGRESS | COMPLETED | NO_ANSWER | FAILED
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  campaign        Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  calls           Call[]
+}
+
+model Call {
+  id           String    @id @default(cuid())
+  leadId       String
+  vapiCallId   String?   // Vapi's call ID for webhook correlation
+  status       String    @default("INITIATED") // INITIATED | RINGING | IN_PROGRESS | COMPLETED | NO_ANSWER | FAILED
+  startedAt    DateTime?
+  endedAt      DateTime?
+  recordingUrl String?
+  transcript   String?   // raw transcript text
+  analysis     String?   // JSON from §5.5: { outcome, interestScore, objections[], summary, nextStep, followUpDraft }
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lead         Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}
