@@ -148,7 +148,20 @@ export class VapiProvider implements TelephonyProvider {
         voice: {
           provider: "11labs",
           voiceId: "21m00Tcm4TlvDq8ikWAM", // Rachel
+          stability: 0.4,         // lower = more natural variation, less robotic
+          similarityBoost: 0.8,
+          style: 0.35,            // some expressiveness
+          useSpeakerBoost: true,
+          optimizeStreamingLatency: 4,
         },
+        // Yield immediately when the lead cuts in
+        stopSpeakingPlan: {
+          numWords: 0,
+          voiceSeconds: 0.2,
+          backoffSeconds: 0.5,
+        },
+        // Tiny pause so it doesn't sound instant-bot, but not slow
+        responseDelaySeconds: 0.1,
         serverUrl: webhookUrl,
         metadata: { leadId, campaignId },
       },
