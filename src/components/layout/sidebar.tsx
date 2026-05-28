@@ -8,6 +8,7 @@ import {
   Users,
   PhoneCall,
   Zap,
+  Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,7 @@ const navItems = [
   { href: "/campaigns", label: "Campaigns", icon: Megaphone },
   { href: "/leads", label: "Leads", icon: Users },
   { href: "/calls", label: "Calls", icon: PhoneCall },
+  { href: "/about", label: "About", icon: Info },
 ];
 
 export function Sidebar() {
@@ -25,13 +27,11 @@ export function Sidebar() {
     <aside className="flex h-full w-56 flex-col border-r border-border bg-sidebar">
       {/* Logo */}
       <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
-        <div
-          className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 glow-logo"
-        >
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 glow-logo">
           <Zap className="h-4 w-4 text-primary" />
         </div>
         <span className="text-sm font-semibold tracking-tight text-sidebar-foreground">
-          outreach
+          Outreach
         </span>
       </div>
 
@@ -48,7 +48,7 @@ export function Sidebar() {
                 "relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors duration-150",
                 active
                   ? "bg-sidebar-accent text-sidebar-primary font-medium"
-                  : "text-sidebar-foreground/50 hover:bg-white/[0.03] hover:text-sidebar-foreground/80"
+                  : "text-sidebar-foreground/50 hover:bg-white/[0.03] hover:text-sidebar-foreground/80",
               )}
             >
               {active && (
@@ -57,7 +57,9 @@ export function Sidebar() {
               <Icon
                 className={cn(
                   "h-4 w-4 shrink-0 transition-colors duration-150",
-                  active ? "text-sidebar-primary" : "text-sidebar-foreground/40"
+                  active
+                    ? "text-sidebar-primary"
+                    : "text-sidebar-foreground/40",
                 )}
               />
               {label}

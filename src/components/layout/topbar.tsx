@@ -11,6 +11,7 @@ const titles: Record<string, string> = {
   "/campaigns": "Campaigns",
   "/leads": "Leads",
   "/calls": "Calls",
+  "/about": "About",
 };
 
 function getTitle(pathname: string): string {

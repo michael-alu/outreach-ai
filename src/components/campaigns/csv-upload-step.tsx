@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Upload, FileText, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
+import { Upload, FileText, ChevronLeft, ChevronRight, AlertCircle, ShieldCheck } from "lucide-react";
 import Papa from "papaparse";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -18,6 +18,7 @@ export function CsvUploadStep({ onParsed, onBack }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [preview, setPreview] = useState<{ headers: string[]; rows: ParsedRow[] } | null>(null);
+  const [consented, setConsented] = useState(false);
 
   const parseFile = useCallback((file: File) => {
     setError(null);
@@ -151,12 +152,39 @@ export function CsvUploadStep({ onParsed, onBack }: Props) {
         </Card>
       )}
 
+      {/* Consent gate */}
+      <div
+        className={cn(
+          "flex items-start gap-3 rounded-lg border px-4 py-3 transition-colors cursor-pointer select-none",
+          consented
+            ? "border-primary/40 bg-primary/5"
+            : "border-border/60 bg-muted/20 hover:border-border"
+        )}
+        onClick={() => setConsented((v) => !v)}
+      >
+        <div className={cn(
+          "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors",
+          consented ? "bg-primary border-primary" : "border-border/60 bg-background"
+        )}>
+          {consented && <svg className="h-2.5 w-2.5 text-primary-foreground" fill="none" viewBox="0 0 10 8"><path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+        </div>
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5 text-sm font-medium">
+            <ShieldCheck className="h-3.5 w-3.5 text-primary shrink-0" />
+            I confirm that every person in this list has explicitly consented to be contacted
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Each lead must have agreed to be reached — through a terms & conditions checkbox, an opt-in form, a job application, or an equivalent explicit consent mechanism. Uploading contacts without prior consent may violate privacy laws (GDPR, NDPR, Rwanda Data Protection Law) and is strictly prohibited.
+          </p>
+        </div>
+      </div>
+
       <div className="flex justify-between">
         <Button variant="ghost" size="sm" onClick={onBack} className="gap-1.5">
           <ChevronLeft className="h-4 w-4" /> Back
         </Button>
         <Button
-          disabled={!preview}
+          disabled={!preview || !consented}
           onClick={() => preview && onParsed(preview.headers, preview.rows)}
           className="gap-2"
         >
