@@ -49,7 +49,7 @@ export default async function LeadDetailPage({
         </div>
         <div className="flex items-center gap-3 shrink-0">
           <StatusBadge status={lead.status} />
-          <LeadRecallButton leadId={lead.id} leadName={lead.name} />
+          <LeadRecallButton leadId={lead.id} leadName={lead.name} hasBeenCalled={lead.calls.length > 0} />
         </div>
       </div>
 

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import {
   Play, Sparkles, Phone, ChevronRight,
-  ExternalLink, Loader2, Pencil, Trash2, X, Check
+  Loader2, Pencil, Trash2, X, Check
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RollupTrigger } from "./rollup-trigger";
@@ -300,7 +300,6 @@ export function CampaignDetailClient({ campaign, leads: initialLeads }: Props) {
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Phone</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Status</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Claude Angle</th>
-                  <th className="px-4 py-3 w-10"></th>
                 </tr>
               </thead>
               <tbody>
@@ -319,7 +318,9 @@ export function CampaignDetailClient({ campaign, leads: initialLeads }: Props) {
                         {lead.priorityRank ?? i + 1}
                       </td>
                       <td className="px-4 py-3">
-                        <p className="text-sm font-medium">{lead.name}</p>
+                        <Link href={`/leads/${lead.id}`} className="text-sm font-medium hover:text-primary transition-colors">
+                          {lead.name}
+                        </Link>
                         {analysis?.interestScore != null && (
                           <p className="text-xs text-muted-foreground font-mono">
                             Score: {analysis.interestScore}/100
@@ -338,14 +339,6 @@ export function CampaignDetailClient({ campaign, leads: initialLeads }: Props) {
                         ) : (
                           <p className="text-xs text-muted-foreground/40 italic">Not enriched yet</p>
                         )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <Link
-                          href={`/leads/${lead.id}`}
-                          className="text-muted-foreground hover:text-foreground"
-                        >
-                          <ExternalLink className="h-3.5 w-3.5" />
-                        </Link>
                       </td>
                     </tr>
                   );

@@ -22,7 +22,7 @@ export function RollupTrigger({ campaignId }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Rollup failed");
       toast.success("Campaign analysis complete", { id: t });
-      router.push("/");
+      router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Rollup failed", { id: t });
     } finally {

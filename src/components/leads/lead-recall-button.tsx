@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button";
 interface Props {
   leadId: string;
   leadName: string;
+  hasBeenCalled: boolean;
 }
 
-export function LeadRecallButton({ leadId, leadName }: Props) {
+export function LeadRecallButton({ leadId, leadName, hasBeenCalled }: Props) {
   const router = useRouter();
   const [recalling, setRecalling] = useState(false);
 
@@ -40,7 +41,7 @@ export function LeadRecallButton({ leadId, leadName }: Props) {
       className="gap-2"
     >
       {recalling ? <Loader2 className="h-4 w-4 animate-spin" /> : <Phone className="h-4 w-4" />}
-      {recalling ? "Calling…" : "Recall"}
+      {recalling ? "Calling…" : hasBeenCalled ? "Recall" : "Call"}
     </Button>
   );
 }
