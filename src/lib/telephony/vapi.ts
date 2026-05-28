@@ -4,61 +4,53 @@ import type { TelephonyProvider, PlaceCallParams, PlaceCallResult } from "./inte
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+function normalizePhone(phone: string): string {
+  return phone.replace(/[\s()\-]/g, "");
+}
+
+function isUSNumber(phone: string): boolean {
+  return normalizePhone(phone).startsWith("+1");
+}
+
+function isRwandanNumber(phone: string): boolean {
+  return normalizePhone(phone).startsWith("+250");
+}
+
 export class VapiProvider implements TelephonyProvider {
   private client: VapiSDK;
-  private resolvedPhoneNumberId: string | null = null;
 
   constructor() {
     if (!process.env.VAPI_API_KEY) throw new Error("VAPI_API_KEY is not set");
     this.client = new VapiSDK({ token: process.env.VAPI_API_KEY });
   }
 
-  /**
-   * Resolves VAPI_PHONE_NUMBER_ID to a UUID.
-   * Accepts either a UUID directly or a phone number string like "+1 (689) 306 9270" —
-   * in the latter case, lists phone numbers from Vapi and finds the matching one.
-   */
-  private async resolvePhoneNumberId(): Promise<string> {
-    if (this.resolvedPhoneNumberId) return this.resolvedPhoneNumberId;
-
-    const configured = process.env.VAPI_PHONE_NUMBER_ID;
-    if (!configured) throw new Error("VAPI_PHONE_NUMBER_ID is not set");
-
-    // Already a UUID — use it directly
-    if (UUID_RE.test(configured.trim())) {
-      this.resolvedPhoneNumberId = configured.trim();
-      return this.resolvedPhoneNumberId;
+  private getPhoneNumberId(destinationPhone: string): string {
+    if (isUSNumber(destinationPhone)) {
+      const id = process.env.VAPI_PHONE_NUMBER_ID;
+      if (!id) throw new Error("VAPI_PHONE_NUMBER_ID is not set (required for US +1 numbers)");
+      if (!UUID_RE.test(id.trim())) throw new Error(`VAPI_PHONE_NUMBER_ID is not a valid UUID: ${id}`);
+      console.log(`[vapi] routing +1 number via free Vapi phone number ID ${id}`);
+      return id.trim();
     }
 
-    // Looks like a phone number string — look up its UUID
-    const normalized = configured.replace(/\s|\(|\)|-/g, "");
-    const phoneNumbers = await this.client.phoneNumbers.list();
-
-    const match = phoneNumbers.find((pn) => {
-      const num = (pn as { number?: string }).number ?? "";
-      return num.replace(/\s|\(|\)|-/g, "") === normalized;
-    });
-
-    if (!match) {
-      const available = phoneNumbers
-        .map((pn) => `${(pn as { number?: string }).number ?? "?"} (id: ${(pn as { id?: string }).id ?? "?"})`)
-        .join(", ");
-      throw new Error(
-        `Phone number "${configured}" not found in your Vapi account. ` +
-        `Available numbers: ${available || "none"}. ` +
-        `Set VAPI_PHONE_NUMBER_ID to one of the UUIDs listed above.`
-      );
+    if (isRwandanNumber(destinationPhone)) {
+      const id = process.env.VAPI_TWILIO_PHONE_NUMBER_ID;
+      if (!id) throw new Error("VAPI_TWILIO_PHONE_NUMBER_ID is not set (required for Rwanda +250 numbers)");
+      if (!UUID_RE.test(id.trim())) throw new Error(`VAPI_TWILIO_PHONE_NUMBER_ID is not a valid UUID: ${id}`);
+      console.log(`[vapi] routing +250 number via Twilio phone number ID ${id}`);
+      return id.trim();
     }
 
-    this.resolvedPhoneNumberId = (match as { id: string }).id;
-    console.log(`[vapi] resolved phone number "${configured}" → UUID ${this.resolvedPhoneNumberId}`);
-    return this.resolvedPhoneNumberId;
+    throw new Error(
+      `Unsupported phone number: "${destinationPhone}". ` +
+      `Only US (+1) and Rwanda (+250) numbers are currently supported.`
+    );
   }
 
   async placeCall(params: PlaceCallParams): Promise<PlaceCallResult> {
     const { phone, name, systemPrompt, campaignId, leadId, webhookUrl } = params;
 
-    const phoneNumberId = await this.resolvePhoneNumberId();
+    const phoneNumberId = this.getPhoneNumberId(phone);
 
     // §5.3 — Claude Haiku as the in-call conversation model
     // §5.4 — Tool use: agent can invoke these during the call
@@ -173,9 +165,6 @@ export class VapiProvider implements TelephonyProvider {
   }
 }
 
-let _provider: VapiProvider | null = null;
-
 export function getVapiProvider(): VapiProvider {
-  if (!_provider) _provider = new VapiProvider();
-  return _provider;
+  return new VapiProvider();
 }
